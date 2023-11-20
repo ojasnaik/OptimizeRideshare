@@ -28,7 +28,8 @@ document.addEventListener('DOMContentLoaded', function() {
             return response.json();
         })
         .then(data => {
-            renderGraph(processGraphData(data));
+            const processedData = processGraphData(data);
+            renderGraph(processedData);
         })
         .catch(error => {
             console.error('Error fetching graph data:', error.message);
