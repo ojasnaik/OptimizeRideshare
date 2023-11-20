@@ -1,7 +1,13 @@
 package com.daa.optimizeRideshare.application;
 
 import com.daa.optimizeRideshare.data.BayWheels;
+import com.daa.optimizeRideshare.data.BayWheelsClean;
+import com.daa.optimizeRideshare.graph.BayWheelsNode;
+import com.daa.optimizeRideshare.graph.CreateGraph;
+import com.daa.optimizeRideshare.repository.BayWheelsCleanRepository;
 import com.daa.optimizeRideshare.repository.BaywheelsRepository;
+import org.jgrapht.Graph;
+import org.jgrapht.graph.DefaultWeightedEdge;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -11,13 +17,31 @@ import java.util.List;
 @Service
 public class ExecuteApp {
 
+    public List<BayWheels> baywheelsRepositoryAll;
+
+    public List<BayWheelsClean> bayWheelsCleanDataList;
+
     @Autowired
     BaywheelsRepository baywheelsRepository;
 
+    @Autowired
+    BayWheelsCleanRepository bayWheelsCleanRepository;
+
+    @Autowired
+    CreateGraph createGraph;
+
+//    @Autowired
+//    DisplayGraph displayGraph;
+
     @Cacheable
-    public List<BayWheels> getBayWheelsData(){
-        List<BayWheels> baywheelsRepositoryAll = baywheelsRepository.findAll();
-        System.out.println("Found");
-        return baywheelsRepositoryAll;
+    public Graph<BayWheelsNode, DefaultWeightedEdge> getBayWheelsData() {
+//        baywheelsRepositoryAll = baywheelsRepository.findAll();
+        bayWheelsCleanDataList = bayWheelsCleanRepository.findAll();
+
+        Graph<BayWheelsNode, DefaultWeightedEdge> bayWheelsGraph = createGraph.createGraphFromData(bayWheelsCleanDataList);
+//        displayGraph.graphStreamFromJGraphT(bayWheelsGraph);
+//        createGraph.display();
+//        System.out.println("Found");
+        return bayWheelsGraph;
     }
 }

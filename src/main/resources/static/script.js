@@ -12,9 +12,9 @@ document.addEventListener('DOMContentLoaded', function() {
     function processGraphData(data) {
         // Convert data to a format suitable for D3 force layout
         const graphData = data.map(item => ({
-            source: item.start_station_id,
-            target: item.end_station_id,
-            weight: item.total_time
+            source: item.source,
+            target: item.target,
+            weight: item.weight
         }));
 
         return graphData;
