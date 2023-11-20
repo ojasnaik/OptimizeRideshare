@@ -1,6 +1,15 @@
-// script.js
 document.addEventListener('DOMContentLoaded', function() {
-    fetch('http://localhost:8080/api/graph-data') // Update with your API endpoint
+    document.getElementById('search-btn').addEventListener('click', function() {
+        const startStationId = document.getElementById('start-station-id').value;
+        const endStationId = document.getElementById('end-station-id').value;
+        fetchGraphData(startStationId, endStationId);
+    });
+
+
+function fetchGraphData(startStationId, endStationId) {
+    const url = `http://localhost:8080/api/get10Shortest?startId=${startStationId}&endId=${endStationId}`;
+
+    fetch(url)
         .then(response => response.json())
         .then(data => {
             renderGraph(processGraphData(data));
@@ -8,7 +17,7 @@ document.addEventListener('DOMContentLoaded', function() {
         .catch(error => {
             console.error('Error fetching graph data:', error);
         });
-
+}
     function processGraphData(data) {
         // Convert data to a format suitable for D3 force layout
         const graphData = data.map(item => ({
@@ -59,8 +68,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 .attr("x2", d => d.target.x)
                 .attr("y2", d => d.target.y);
 
-            node.attr("cx", d => Math.max(5, Math.min(width - 5, d.x))) // keep nodes within SVG bounds
-                .attr("cy", d => Math.max(5, Math.min(height - 5, d.y))); // 5 is the radius of the node
+            node.attr("cx", d => Math.max(5, Math.min(width - 5, d.x))) 
+                .attr("cy", d => Math.max(5, Math.min(height - 5, d.y)));
         });
     }
 });
