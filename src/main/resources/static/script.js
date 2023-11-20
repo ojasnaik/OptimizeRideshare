@@ -7,33 +7,16 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
     function fetchGraphData(startStationId, endStationId) {
-        const url = new URL('http://localhost:8080/api/get10Shortest');
-        
-        // Add query parameters
-        url.searchParams.append('startId', startStationId);
-        url.searchParams.append('endId', endStationId);
-    
-        // Use the fetch API to get data from the backend
-        fetch(url.toString(), {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
-            },
-        })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            return response.json();
-        })
-        .then(data => {
-            const processedData = processGraphData(data);
-            renderGraph(processedData);
-        })
-        .catch(error => {
-            console.error('Error fetching graph data:', error.message);
-        });
+        const url = `http://localhost:8080/api/graph-data?startId=${startStationId}&endId=${endStationId}`;
+
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                renderGraph(processGraphData(data));
+            })
+            .catch(error => {
+                console.error('Error fetching graph data:', error);
+            });
     }
     
     function processGraphData(data) {
