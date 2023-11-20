@@ -18,98 +18,90 @@ function fetchGraphData(startStationId, endStationId) {
             console.error('Error fetching graph data:', error);
         });
 }
-    function processGraphData(data) {
-    // Flatten the array of arrays into a single array
-        const flattenedData = data.flat();
 
-        // Process the data as required for D3
-        // (This part depends on how you want to use the 'weight' in your visualization)
-        const graphData = flattenedData.map(item => ({
-            source: item.source,
-            target: item.target,
-            weight: item.weight
-            }));
-
-         return graphData;
-    }
+function processGraphData(data) {
+    const flattenedData = data.flat();
+    return flattenedData.map(item => ({
+        source: item.source,
+        target: item.target,
+        weight: item.weight
+    }));
+}
 
 
-    function renderGraph(graphData) {
-        // Dynamically set width and height based on the screen size
-        const width = window.innerWidth * 0.8, height = window.innerHeight * 0.8;
-
+    function renderGraph(graph) {
+        d3.select('#graph-container').html('');
+        const width = window.innerWidth * 0.9;
+        const height = window.innerHeight * 0.9;
+    
         const svg = d3.select('#graph-container').append('svg')
-                      .attr('width', width)
-                      .attr('height', height);
+            .attr('width', width)
+            .attr('height', height);
+    
+        const colorScale = d3.scaleOrdinal(d3.schemeCategory10);
+        const uniqueEdges = Array.from(new Set(graphData.map(d => `${d.source}-${d.target}`)));
+        uniqueEdges.forEach(edge => colorScale(edge));
+    
+        const nodePositions = calculateNodePositions(graphData, width, height);
+    
+        const links = svg.selectAll(".link")
+            .data(graphData)
+            .enter().append("line")
+            .attr("class", "link")
+            .style('stroke', d => colorScale(`${d.source}-${d.target}`))
+            .style('stroke-width', 2)
+            .attr('x1', d => nodePositions[d.source].x)
+            .attr('y1', d => nodePositions[d.source].y)
+            .attr('x2', d => nodePositions[d.target].x)
+            .attr('y2', d => nodePositions[d.target].y);
+    
+        // Draw nodes
+        const nodes = svg.selectAll(".node")
+        .data(Object.keys(nodePositions))
+        .enter().append("circle")
+        .attr("class", "node")
+        .attr("r", 5)
+        .attr("cx", d => nodePositions[d].x)
+        .attr("cy", d => nodePositions[d].y)
+        .style("fill", "#69b3a2");
 
-        // ... Rest of the existing setup for nodes and links ...
-        const nodes = Array.from(new Set(graphData.flatMap(d => [d.source, d.target])),
-                            id => ({ id }));
 
-        // Create the simulation
-        const simulation = d3.forceSimulation(nodes)
-        .force("link", d3.forceLink(graphData).id(d => d.id))
-        .force("charge", d3.forceManyBody())
-        .force("center", d3.forceCenter(width / 2, height / 2));
-
-        // Create labels for the nodes
-        const labels = svg.append("g")
-                          .attr("class", "labels")
-                          .selectAll("text")
-                          .data(nodes)
-                          .enter().append("text")
-                          .attr("dx", 12)
-                          .attr("dy", ".35em")
-                          .text(d => d.id)
-                          .style("fill", "#555")
-                          .style("font-size", "12px");
-
-        // Create labels for the links (edges)
-        const edgepaths = svg.append("g")
-                             .selectAll(".edgepath")
-                             .data(graphData)
-                             .enter().append("path")
-                             .attr("class", "edgepath")
-                             .style("fill-opacity", 0)
-                             .style("stroke-opacity", 0)
-                             .style("pointer-events", "none");
-
-        const edgelabels = svg.append("g")
-                              .selectAll(".edgelabel")
-                              .data(graphData)
-                              .enter().append("text")
-                              .style("pointer-events", "none")
-                              .attr("class", "edgelabel")
-                              .attr("id", (d, i) => 'edgelabel' + i)
-                              .style("fill", "#aaa")
-                              .style("font-size", "10px");
-
-        edgelabels.append("textPath")
-                  .attr("xlink:href", (d, i) => '#edgepath' + i)
-                  .style("text-anchor", "middle")
-                  .style("pointer-events", "none")
-                  .attr("startOffset", "50%")
-                  .text(d => d.weight + ' seconds');
-
-        // Update positions after each simulation tick
-        simulation.on("tick", () => {
-            
-            link.attr("x1", d => d.source.x)
-            .attr("y1", d => d.source.y)
-            .attr("x2", d => d.target.x)
-            .attr("y2", d => d.target.y);
-
-            labels.attr("x", d => d.x)
-                  .attr("y", d => d.y);
-
-            edgepaths.attr('d', d => {
-                return 'M ' + d.source.x + ' ' + d.source.y + ' L ' + d.target.x + ' ' + d.target.y;
-            });
-
-            edgelabels.attr('transform', d => {
-                return 'translate(' + (d.source.x + d.target.x) / 2 + ',' + (d.source.y + d.target.y) / 2 + ')';
-            });
-        });
+        // Draw node labels
+        const labels = svg.selectAll('.label')
+            .data(graph.nodes)
+            .enter().append('text')
+            .attr('class', 'label')
+            .attr('x', d => nodePositions[d].x + 10)
+            .attr('y', d => nodePositions[d].y + 5)
+            .text(d => d)
+            .style('fill', '#555')
+            .style('font-size', '12px');
+    
+        // Draw edge weights
+        svg.selectAll('.edge-weight')
+            .data(graph.links)
+            .enter().append('text')
+            .attr('x', d => (nodePositions[d.source].x + nodePositions[d.target].x) / 2)
+            .attr('y', d => (nodePositions[d.source].y + nodePositions[d.target].y) / 2)
+            .text(d => `${d.weight} seconds`)
+            .style('fill', '#555')
+            .style('font-size', '10px');
     }
 
+    function calculateNodePositions(graphData, width, height) {
+        const nodes = Array.from(new Set(graphData.flatMap(d => [d.source, d.target])));
+        const angleStep = (2 * Math.PI) / nodes.length;
+        const radius = Math.min(width, height) / 2 - 50;
+        const nodePositions = {};
+    
+        nodes.forEach((node, index) => {
+            const angle = index * angleStep;
+            nodePositions[node] = {
+                x: (width / 2) + radius * Math.cos(angle),
+                y: (height / 2) + radius * Math.sin(angle)
+            };
+        });
+    
+        return nodePositions;
+    }
 });
