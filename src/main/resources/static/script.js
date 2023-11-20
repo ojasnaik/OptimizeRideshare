@@ -6,28 +6,43 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
 
-function fetchGraphData(startStationId, endStationId) {
-    const url = `http://localhost:8080/api/get10Shortest?startId=${startStationId}&endId=${endStationId}`;
-
-    fetch(url)
-        .then(response => response.json())
+    function fetchGraphData(startStationId, endStationId) {
+        const url = new URL('http://localhost:8080/api/get10Shortest');
+        
+        // Add query parameters
+        url.searchParams.append('startId', startStationId);
+        url.searchParams.append('endId', endStationId);
+    
+        // Use the fetch API to get data from the backend
+        fetch(url.toString(), {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
         .then(data => {
             renderGraph(processGraphData(data));
         })
         .catch(error => {
-            console.error('Error fetching graph data:', error);
+            console.error('Error fetching graph data:', error.message);
         });
-}
-
-function processGraphData(data) {
-    const flattenedData = data.flat();
-    return flattenedData.map(item => ({
-        source: item.source,
-        target: item.target,
-        weight: item.weight
-    }));
-}
-
+    }
+    
+    function processGraphData(data) {
+        const flattenedData = data.flat();
+        return flattenedData.map(item => ({
+            source: item.source,
+            target: item.target,
+            weight: item.weight
+        }));
+    }
 
     function renderGraph(graph) {
         d3.select('#graph-container').html('');
