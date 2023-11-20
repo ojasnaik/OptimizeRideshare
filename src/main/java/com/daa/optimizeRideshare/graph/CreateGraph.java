@@ -2,14 +2,21 @@ package com.daa.optimizeRideshare.graph;
 
 import com.daa.optimizeRideshare.data.BayWheelsClean;
 import org.jgrapht.Graph;
+import org.jgrapht.GraphPath;
+import org.jgrapht.alg.shortestpath.YenKShortestPath;
 import org.jgrapht.graph.DefaultDirectedWeightedGraph;
 import org.jgrapht.graph.DefaultWeightedEdge;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class CreateGraph {
+
+    @Autowired
+    YensAlgorithm yensAlgorithm;
 
     Graph<BayWheelsNode, DefaultWeightedEdge> bayWheelsRideMap;
     public Graph<BayWheelsNode, DefaultWeightedEdge> createGraphFromData(List<BayWheelsClean> data){
@@ -17,6 +24,8 @@ public class CreateGraph {
             bayWheelsRideMap = new DefaultDirectedWeightedGraph<>(DefaultWeightedEdge.class);
 
             for(BayWheelsClean entry : data){
+                if(entry.getTotal_time() < 0) continue;
+
                 BayWheelsNode node1 = new BayWheelsNode();
                 node1.setStation_id(entry.getStart_station_id());
                 node1.setStation_name(entry.getStart_station_name());
@@ -38,9 +47,20 @@ public class CreateGraph {
 
             }
 
-
-
             return bayWheelsRideMap;
+    }
+    public Graph<BayWheelsNode, DefaultWeightedEdge> getBayWheelsRideGraph() {
+            return bayWheelsRideMap;
+    }
+
+    public Set<GraphPath<BayWheelsNode, DefaultWeightedEdge>> getKShortestPathsBetween(BayWheelsNode source, BayWheelsNode sink, int k){
+        return yensAlgorithm.getKShortestPaths(bayWheelsRideMap, source, sink, k);
+    }
+
+    public List<GraphPath<BayWheelsNode, DefaultWeightedEdge>> getKShortestPaths(BayWheelsNode source, BayWheelsNode sink, int k){
+        YenKShortestPath<BayWheelsNode, DefaultWeightedEdge> yens = new YenKShortestPath<>(bayWheelsRideMap);
+        List<GraphPath<BayWheelsNode, DefaultWeightedEdge>> paths = yens.getPaths(source, sink, k);
+        return paths;
     }
 
 //    public void display(){
