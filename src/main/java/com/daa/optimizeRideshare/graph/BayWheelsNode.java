@@ -10,6 +10,13 @@ public class BayWheelsNode {
     private Double station_longitude;
     private Double station_latitude;
 
+    public BayWheelsNode() {
+    }
+
+    public BayWheelsNode(String station_id) {
+        this.station_id = station_id;
+    }
+
     public String getStation_id() {
         return station_id;
     }

@@ -111,5 +111,5 @@ function fetchGraphData(startStationId, endStationId) {
             });
         });
     }
-    
+
 });

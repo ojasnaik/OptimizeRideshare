@@ -1,9 +1,12 @@
 package com.daa.optimizeRideshare;
 
+
 import com.daa.optimizeRideshare.application.ExecuteApp;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication
@@ -22,13 +25,13 @@ public class OptimizeRideshareApplication {
 //		app.run(args);
         SpringApplication.run(OptimizeRideshareApplication.class, args);
     }
-//	@Bean
-//	CommandLineRunner run(ExecuteApp yourService) {
-//		return args -> {
-//			// Call methods of your service here
-//			List<BayWheelsClean> bayWheelsData = yourService.getBayWheelsData();
-//			System.out.println("Found");
-//		};
-//	}
+	@Bean
+	CommandLineRunner run(ExecuteApp yourService) {
+		return args -> {
+			// Call methods of your service here
+			yourService.getBayWheelsDataAndCreateGraph();
+			System.out.println("Found");
+		};
+	}
 
 }

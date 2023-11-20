@@ -9,7 +9,6 @@ import com.daa.optimizeRideshare.repository.BaywheelsRepository;
 import org.jgrapht.Graph;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -32,9 +31,7 @@ public class ExecuteApp {
 
 //    @Autowired
 //    DisplayGraph displayGraph;
-
-    @Cacheable
-    public Graph<BayWheelsNode, DefaultWeightedEdge> getBayWheelsData() {
+    public Graph<BayWheelsNode, DefaultWeightedEdge> getBayWheelsDataAndCreateGraph() {
 //        baywheelsRepositoryAll = baywheelsRepository.findAll();
         bayWheelsCleanDataList = bayWheelsCleanRepository.findAll();
 
