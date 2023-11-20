@@ -59,8 +59,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 .attr("x2", d => d.target.x)
                 .attr("y2", d => d.target.y);
 
-            node.attr("cx", d => d.x)
-                .attr("cy", d => d.y);
+            node.attr("cx", d => Math.max(5, Math.min(width - 5, d.x))) // keep nodes within SVG bounds
+                .attr("cy", d => Math.max(5, Math.min(height - 5, d.y))); // 5 is the radius of the node
         });
     }
 });
