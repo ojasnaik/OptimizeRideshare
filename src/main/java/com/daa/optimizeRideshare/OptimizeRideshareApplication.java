@@ -1,32 +1,34 @@
 package com.daa.optimizeRideshare;
 
 import com.daa.optimizeRideshare.application.ExecuteApp;
-import com.daa.optimizeRideshare.data.BayWheels;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 
-import java.util.List;
-
 @SpringBootApplication
-@ComponentScan({"com.daa.optimizeRideshare.repository", "com.daa.optimizeRideshare.application"})
+@ComponentScan({"com.daa.optimizeRideshare.repository", "com.daa.optimizeRideshare.application", "com.daa.optimizeRideshare.graph", "com.daa.optimizeRideshare.controller"})
 public class OptimizeRideshareApplication {
 
-	@Autowired
-	ExecuteApp executeApp;
-	public static void main(String[] args) {
-		SpringApplication.run(OptimizeRideshareApplication.class, args);
-	}
-	@Bean
-	CommandLineRunner run(ExecuteApp yourService) {
-		return args -> {
-			// Call methods of your service here
-			List<BayWheels> bayWheelsData = yourService.getBayWheelsData();
-			System.out.println("Found");
-		};
-	}
+    @Autowired
+    ExecuteApp executeApp;
+
+    public static void main(String[] args) {
+//		System.setProperty("org.graphstream.ui", "swing");
+//		SpringApplication app = new SpringApplication(OptimizeRideshareApplication.class);
+//		SpringApplication app = new SpringApplication(OptimizeRideshareApplication.class);
+//		app.setWebApplicationType(WebApplicationType.NONE);
+//		app.setHeadless(true);
+//		app.run(args);
+        SpringApplication.run(OptimizeRideshareApplication.class, args);
+    }
+//	@Bean
+//	CommandLineRunner run(ExecuteApp yourService) {
+//		return args -> {
+//			// Call methods of your service here
+//			List<BayWheelsClean> bayWheelsData = yourService.getBayWheelsData();
+//			System.out.println("Found");
+//		};
+//	}
 
 }
