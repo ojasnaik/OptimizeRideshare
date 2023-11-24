@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 @RestController
 @RequestMapping("/api")
@@ -26,6 +25,9 @@ public class RideshareController {
 
     @Autowired
     CreateGraph createGraph;
+
+    Graph<BayWheelsNode, DefaultWeightedEdge> kShortestPathsGraph;
+    List<GraphPath<BayWheelsNode, DefaultWeightedEdge>> kShortestPaths;
 
     @Cacheable("EdgeListCache")
     @GetMapping("/graph-data")
@@ -37,17 +39,27 @@ public class RideshareController {
     }
 
     @GetMapping("/get10Shortest")
-    public ResponseEntity<List<List<EdgeDTO>>> getKShortestPathEdges(@RequestParam(value = "startId", required = false) String s, @RequestParam(value = "endId", required = false) String d) {
+    public ResponseEntity<List<List<EdgeDTO>>> getKShortestPathEdges(@RequestParam(value = "startId") String s, @RequestParam(value = "endId") String d) {
         BayWheelsNode source = new BayWheelsNode(s);
         BayWheelsNode destination = new BayWheelsNode(d);
         Graph<BayWheelsNode, DefaultWeightedEdge> bayWheelsData = createGraph.getBayWheelsRideGraph();
         List<List<EdgeDTO>> response = new ArrayList<>();
 //        Set<GraphPath<BayWheelsNode, DefaultWeightedEdge>> kShortestPaths = createGraph.getKShortestPathsBetween(source, destination, 10);
-        List<GraphPath<BayWheelsNode, DefaultWeightedEdge>> kShortestPaths = createGraph.getKShortestPaths(source, destination, 10);
+        kShortestPaths = createGraph.getKShortestPaths(source, destination, 10);
         kShortestPaths.forEach(path -> {
             response.add(path.getEdgeList().stream().map(edge -> convertEdgeToDTO(bayWheelsData, edge)).toList());
         });
 
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/getOverallShortest")
+    public ResponseEntity<List<EdgeDTO>> OverallShortestPath(@RequestParam(value = "startId", required = false) String s, @RequestParam(value = "endId", required = false) String d) {
+        BayWheelsNode source = new BayWheelsNode(s);
+        BayWheelsNode destination = new BayWheelsNode(d);
+        Graph<BayWheelsNode, DefaultWeightedEdge> kShortestPathsGraph = createGraph.createGraphFromPaths(kShortestPaths);
+        GraphPath<BayWheelsNode, DefaultWeightedEdge> overallShortestPath = createGraph.getOverallShortestPath(kShortestPathsGraph, source, destination);
+        List<EdgeDTO> response = overallShortestPath.getEdgeList().stream().map(defaultWeightedEdge -> convertEdgeToDTO(kShortestPathsGraph, defaultWeightedEdge)).toList();
         return ResponseEntity.ok(response);
     }
 
