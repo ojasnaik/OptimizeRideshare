@@ -3,7 +3,7 @@ package com.daa.optimizeRideShare.controller;
 
 import com.daa.optimizeRideShare.data.EdgeDTO;
 import com.daa.optimizeRideShare.graph.BayWheelsNode;
-import com.daa.optimizeRideShare.graph.CreateGraph;
+import com.daa.optimizeRideShare.graph.GraphOperations;
 import org.jgrapht.Graph;
 import org.jgrapht.GraphPath;
 import org.jgrapht.graph.DefaultWeightedEdge;
@@ -24,7 +24,8 @@ import java.util.List;
 public class RideShareController {
 
     @Autowired
-    CreateGraph createGraph;
+    GraphOperations graphOperations;
+
     List<GraphPath<BayWheelsNode, DefaultWeightedEdge>> kShortestPaths;
 
     /**
@@ -34,7 +35,7 @@ public class RideShareController {
     @Cacheable("EdgeListCache")
     @GetMapping("/graph-data")
     public ResponseEntity<List<EdgeDTO>> getGraphEdges() {
-        Graph<BayWheelsNode, DefaultWeightedEdge> bayWheelsData = createGraph.getBayWheelsRideGraph();
+        Graph<BayWheelsNode, DefaultWeightedEdge> bayWheelsData = graphOperations.getBayWheelsRideGraph();
         List<EdgeDTO> edgeDTOS = bayWheelsData.edgeSet().stream().map(edge -> convertEdgeToDTO(bayWheelsData, edge)).toList();
         return ResponseEntity.ok(edgeDTOS);
     }
@@ -49,9 +50,9 @@ public class RideShareController {
     public ResponseEntity<List<List<EdgeDTO>>> getKShortestPathEdges(@RequestParam(value = "sourceStationId") String sourceStationId, @RequestParam(value = "destinationStationId") String destinationStationId) {
         BayWheelsNode source = new BayWheelsNode(sourceStationId);
         BayWheelsNode destination = new BayWheelsNode(destinationStationId);
-        Graph<BayWheelsNode, DefaultWeightedEdge> bayWheelsData = createGraph.getBayWheelsRideGraph();
+        Graph<BayWheelsNode, DefaultWeightedEdge> bayWheelsData = graphOperations.getBayWheelsRideGraph();
         List<List<EdgeDTO>> response = new ArrayList<>();
-        kShortestPaths = createGraph.getKShortestPaths(source, destination, 10);
+        kShortestPaths = graphOperations.getKShortestPaths(source, destination, 10);
         kShortestPaths.forEach(path -> {
             response.add(path.getEdgeList().stream().map(edge -> convertEdgeToDTO(bayWheelsData, edge)).toList());
         });
@@ -69,8 +70,8 @@ public class RideShareController {
     public ResponseEntity<List<List<EdgeDTO>>> OverallShortestPath(@RequestParam(value = "sourceStationId", required = false) String sourceStationId, @RequestParam(value = "destinationStationId", required = false) String destinationStationId) {
         BayWheelsNode source = new BayWheelsNode(sourceStationId);
         BayWheelsNode destination = new BayWheelsNode(destinationStationId);
-        Graph<BayWheelsNode, DefaultWeightedEdge> kShortestPathsGraph = createGraph.createGraphFromPaths(kShortestPaths);
-        GraphPath<BayWheelsNode, DefaultWeightedEdge> overallCheapestPath = createGraph.getOverallCheapestPath(kShortestPathsGraph, source, destination);
+        Graph<BayWheelsNode, DefaultWeightedEdge> kShortestPathsGraph = graphOperations.createGraphFromPaths(kShortestPaths);
+        GraphPath<BayWheelsNode, DefaultWeightedEdge> overallCheapestPath = graphOperations.getOverallCheapestPath(kShortestPathsGraph, source, destination);
         List<EdgeDTO> response = overallCheapestPath.getEdgeList().stream().map(defaultWeightedEdge -> convertEdgeToDTO(kShortestPathsGraph, defaultWeightedEdge)).toList();
         return ResponseEntity.ok(Collections.singletonList(response));
     }

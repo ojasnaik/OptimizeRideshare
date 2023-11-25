@@ -17,21 +17,15 @@ public class OptimizeRideShareApplication {
     ExecuteApp executeApp;
 
     public static void main(String[] args) {
-//		System.setProperty("org.graphstream.ui", "swing");
-//		SpringApplication app = new SpringApplication(OptimizeRideshareApplication.class);
-//		SpringApplication app = new SpringApplication(OptimizeRideshareApplication.class);
-//		app.setWebApplicationType(WebApplicationType.NONE);
-//		app.setHeadless(true);
-//		app.run(args);
         SpringApplication.run(OptimizeRideShareApplication.class, args);
     }
-	@Bean
-	CommandLineRunner run(ExecuteApp yourService) {
-		return args -> {
-			// Call methods of your service here
-			yourService.getBayWheelsDataAndCreateGraph();
-			System.out.println("Found");
-		};
-	}
+
+    @Bean
+    CommandLineRunner run(ExecuteApp yourService) {
+        return args -> {
+            yourService.getBayWheelsDataAndCreateGraph();
+            System.out.println("Found");
+        };
+    }
 
 }

@@ -1,7 +1,7 @@
 package com.daa.optimizeRideShare.application;
 
 import com.daa.optimizeRideShare.data.BayWheelsClean;
-import com.daa.optimizeRideShare.graph.CreateGraph;
+import com.daa.optimizeRideShare.graph.GraphOperations;
 import com.daa.optimizeRideShare.repository.BayWheelsCleanRepository;
 import com.daa.optimizeRideShare.repository.BaywheelsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,13 +21,13 @@ public class ExecuteApp {
     BayWheelsCleanRepository bayWheelsCleanRepository;
 
     @Autowired
-    CreateGraph createGraph;
+    GraphOperations graphOperations;
 
     /**
      * This method will fetch all the clean data saved into Postgres after EDA and create a weighted and directed graph.
      */
     public void getBayWheelsDataAndCreateGraph() {
         bayWheelsCleanDataList = bayWheelsCleanRepository.findAll();
-        createGraph.createGraphFromData(bayWheelsCleanDataList);
+        graphOperations.createGraphFromData(bayWheelsCleanDataList);
     }
 }

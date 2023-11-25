@@ -17,7 +17,7 @@ import java.util.*;
  * Service class to implement All Graph operations
  */
 @Service
-public class CreateGraph {
+public class GraphOperations {
 
     @Autowired
     YensAlgorithm yensAlgorithm;
@@ -26,6 +26,7 @@ public class CreateGraph {
 
     /**
      * Service method to create a Graph representation of the cleaned BayWheels Data.
+     *
      * @param data Graph Data fetched from Postgres DB.
      */
     public void createGraphFromData(List<BayWheelsClean> data) {
@@ -60,6 +61,7 @@ public class CreateGraph {
 
     /**
      * Getter method BayWheels data Graph representation
+     *
      * @return Graph representation
      */
     public Graph<BayWheelsNode, DefaultWeightedEdge> getBayWheelsRideGraph() {
@@ -68,9 +70,10 @@ public class CreateGraph {
 
     /**
      * Service method to get K-shortest Paths using a Yens Algorithm implementation
+     *
      * @param source source station Node
-     * @param sink destination station Node
-     * @param k number of Shortest Paths required
+     * @param sink   destination station Node
+     * @param k      number of Shortest Paths required
      * @return A List of jGraphT GraphPath's each representing a shortest path.
      */
     public List<GraphPath<BayWheelsNode, DefaultWeightedEdge>> getKShortestPaths(BayWheelsNode source, BayWheelsNode sink, int k) {
@@ -80,9 +83,10 @@ public class CreateGraph {
 
     /**
      * Service method to get the overall cheapest path among the k Shortest
+     *
      * @param kShortestPathsGraph Graph representation of the k shortest paths
-     * @param source Source station Node
-     * @param sink Destination station Node
+     * @param source              Source station Node
+     * @param sink                Destination station Node
      * @return jGraphT GraphPath representation of the shortest Path
      */
     public GraphPath<BayWheelsNode, DefaultWeightedEdge> getOverallCheapestPath(Graph<BayWheelsNode, DefaultWeightedEdge> kShortestPathsGraph, BayWheelsNode source, BayWheelsNode sink) {
@@ -96,11 +100,12 @@ public class CreateGraph {
 
     /**
      * Dynamic Programming logic to find the Cheapest path based on our custom criteria
+     *
      * @param kShortestPathsGraph Graph representation of the k shortest paths
-     * @param source Source station Node
-     * @param sink Destination station Node
-     * @param visited Visited Set
-     * @param cacheMap Hash Map to store results of overlapping sub-problems.
+     * @param source              Source station Node
+     * @param sink                Destination station Node
+     * @param visited             Visited Set
+     * @param cacheMap            Hash Map to store results of overlapping sub-problems.
      * @return jGraphT GraphPath representation of the sub-problem results
      */
     private GraphPath<BayWheelsNode, DefaultWeightedEdge> dp(Graph<BayWheelsNode, DefaultWeightedEdge> kShortestPathsGraph, BayWheelsNode source, BayWheelsNode sink, Set<BayWheelsNode> visited, Map<BayWheelsNode, GraphPath<BayWheelsNode, DefaultWeightedEdge>> cacheMap) {
@@ -133,6 +138,15 @@ public class CreateGraph {
         return minPath;
     }
 
+    /**
+     * Utility Method to append two adjacent paths and return a combined path
+     *
+     * @param kShortestPathsGraph source graph
+     * @param path1               Path 1
+     * @param path2               Path 2
+     * @param totalWeight         total weight of two Paths
+     * @return combined Path with total weight
+     */
     private GraphPath<BayWheelsNode, DefaultWeightedEdge> appendPaths(Graph<BayWheelsNode, DefaultWeightedEdge> kShortestPathsGraph, GraphPath<BayWheelsNode, DefaultWeightedEdge> path1, GraphPath<BayWheelsNode, DefaultWeightedEdge> path2, double totalWeight) {
         List<DefaultWeightedEdge> combinedEdges = new ArrayList<>();
         combinedEdges.addAll(path1.getEdgeList());
@@ -150,6 +164,14 @@ public class CreateGraph {
 
     }
 
+    /**
+     * Utility method to create a jGraphT GraphPath just one edge from source and destination nodes.
+     *
+     * @param kShortestPathsGraph - source Graph
+     * @param source              -Source Node
+     * @param sink                -Destination Node
+     * @return jGraphT single edge GraphPath
+     */
     private GraphPath<BayWheelsNode, DefaultWeightedEdge> createGraphPath(Graph<BayWheelsNode, DefaultWeightedEdge> kShortestPathsGraph, BayWheelsNode source, BayWheelsNode sink) {
         List<DefaultWeightedEdge> edges = new ArrayList<>();
         DefaultWeightedEdge edge = kShortestPathsGraph.getEdge(source, sink);
@@ -159,6 +181,13 @@ public class CreateGraph {
         return new GraphWalk<>(kShortestPathsGraph, source, sink, edges, weight);
     }
 
+    /**
+     * Utility method to get cost per edge according to custom criteria
+     *
+     * @param kShortestPathsGraph Source Graph
+     * @param edge                Edge representation
+     * @return cost for the edge
+     */
     private double getWeightForEdge(Graph<BayWheelsNode, DefaultWeightedEdge> kShortestPathsGraph, DefaultWeightedEdge edge) {
         double weight = 0;
         double edgeWeight = kShortestPathsGraph.getEdgeWeight(edge);
@@ -168,6 +197,12 @@ public class CreateGraph {
         return weight;
     }
 
+    /**
+     * Utility method to create a Graph from a list of Paths.
+     *
+     * @param kShortestPaths Path List
+     * @return Graph representation
+     */
     public Graph<BayWheelsNode, DefaultWeightedEdge> createGraphFromPaths(List<GraphPath<BayWheelsNode, DefaultWeightedEdge>> kShortestPaths) {
         Graph<BayWheelsNode, DefaultWeightedEdge> kShortestPathsGraph =
                 new SimpleDirectedWeightedGraph<>(DefaultWeightedEdge.class);

@@ -9,9 +9,20 @@ import org.springframework.stereotype.Service;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * Service Class to implement Yens Algorithm
+ */
 @Service
 public class YensAlgorithm {
 
+    /**
+     * Service Method to get K-shortest Paths using Yens Algorithm. Uses a library implementation of Dijkstra's algorithm internally.
+     * @param graph Input Graph
+     * @param source Source Node
+     * @param sink Destination Node
+     * @param k Number of shortest paths required
+     * @return a Set of K unique shortest paths
+     */
     public Set<GraphPath<BayWheelsNode, DefaultWeightedEdge>> getKShortestPaths(Graph<BayWheelsNode, DefaultWeightedEdge> graph, BayWheelsNode source, BayWheelsNode sink, int k) {
         Set<GraphPath<BayWheelsNode, DefaultWeightedEdge>> paths = new HashSet<>();
         Set<GraphPath<BayWheelsNode, DefaultWeightedEdge>> candidatePaths = new HashSet<>();
@@ -56,6 +67,7 @@ public class YensAlgorithm {
 
         return paths;
     }
+
 
     private static GraphPath<BayWheelsNode, DefaultWeightedEdge> getShortestPath(Set<GraphPath<BayWheelsNode, DefaultWeightedEdge>> candidatePaths, Set<GraphPath<BayWheelsNode, DefaultWeightedEdge>> paths) {
 
