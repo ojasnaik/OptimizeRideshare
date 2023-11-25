@@ -54,6 +54,10 @@
 			<artifactId>jgrapht-io</artifactId>
 			<version>1.5.2</version>
 		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-devtools</artifactId>
+		</dependency>
 <!--		<dependency>-->
 <!--			<groupId>org.graphstream</groupId>-->
 <!--			<artifactId>gs-core</artifactId>-->
