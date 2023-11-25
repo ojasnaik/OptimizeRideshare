@@ -1,7 +1,7 @@
-package com.daa.optimizeRideshare;
+package com.daa.optimizeRideShare;
 
 
-import com.daa.optimizeRideshare.application.ExecuteApp;
+import com.daa.optimizeRideShare.application.ExecuteApp;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -10,8 +10,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication
-@ComponentScan({"com.daa.optimizeRideshare.repository", "com.daa.optimizeRideshare.application", "com.daa.optimizeRideshare.graph", "com.daa.optimizeRideshare.controller"})
-public class OptimizeRideshareApplication {
+@ComponentScan({"com.daa.optimizeRideShare.repository", "com.daa.optimizeRideShare.application", "com.daa.optimizeRideShare.graph", "com.daa.optimizeRideShare.controller"})
+public class OptimizeRideShareApplication {
 
     @Autowired
     ExecuteApp executeApp;
@@ -23,7 +23,7 @@ public class OptimizeRideshareApplication {
 //		app.setWebApplicationType(WebApplicationType.NONE);
 //		app.setHeadless(true);
 //		app.run(args);
-        SpringApplication.run(OptimizeRideshareApplication.class, args);
+        SpringApplication.run(OptimizeRideShareApplication.class, args);
     }
 	@Bean
 	CommandLineRunner run(ExecuteApp yourService) {

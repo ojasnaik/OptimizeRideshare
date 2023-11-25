@@ -1,12 +1,14 @@
-package com.daa.optimizeRideshare.graph;
+package com.daa.optimizeRideShare.graph;
 
 import java.util.Objects;
 
+/**
+ * Template to represent a BayWheels station
+ */
 public class BayWheelsNode {
 
     private String station_id;
     private String station_name;
-
     private Double station_longitude;
     private Double station_latitude;
 

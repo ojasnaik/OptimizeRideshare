@@ -1,4 +1,4 @@
-package com.daa.optimizeRideshare.repository;
+package com.daa.optimizeRideShare.repository;
 
 import org.hibernate.boot.model.naming.Identifier;
 import org.hibernate.boot.model.naming.PhysicalNamingStrategy;

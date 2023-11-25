@@ -1,10 +1,10 @@
-package com.daa.optimizeRideshare;
+package com.daa.optimizeRideShare;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class OptimizeRideshareApplicationTests {
+class OptimizeRideShareApplicationTests {
 
 	@Test
 	void contextLoads() {

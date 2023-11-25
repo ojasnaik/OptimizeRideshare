@@ -1,10 +1,13 @@
-package com.daa.optimizeRideshare.data;
+package com.daa.optimizeRideShare.data;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
+/**
+ * Entity class to represent the BayWheels data(Post-Cleaning)
+ */
 @Entity
 @Table(name = "\"CleanBayWheelsData\"", schema = "public")
 public class BayWheelsClean {

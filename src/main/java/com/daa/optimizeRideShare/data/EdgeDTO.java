@@ -1,5 +1,8 @@
-package com.daa.optimizeRideshare.data;
+package com.daa.optimizeRideShare.data;
 
+/**
+ * DTO class to represent Graph Edge
+ */
 public class EdgeDTO {
     private String source;
     private String target;

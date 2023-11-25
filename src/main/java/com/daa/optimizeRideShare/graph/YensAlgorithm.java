@@ -1,4 +1,4 @@
-package com.daa.optimizeRideshare.graph;
+package com.daa.optimizeRideShare.graph;
 import org.jgrapht.Graph;
 import org.jgrapht.GraphPath;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;

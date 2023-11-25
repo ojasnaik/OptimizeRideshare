@@ -1,6 +1,6 @@
-package com.daa.optimizeRideshare.repository;
+package com.daa.optimizeRideShare.repository;
 
-import com.daa.optimizeRideshare.data.BayWheels;
+import com.daa.optimizeRideShare.data.BayWheels;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface BaywheelsRepository extends JpaRepository<BayWheels, Long> {

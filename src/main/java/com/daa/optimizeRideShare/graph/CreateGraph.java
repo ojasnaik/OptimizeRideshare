@@ -1,6 +1,6 @@
-package com.daa.optimizeRideshare.graph;
+package com.daa.optimizeRideShare.graph;
 
-import com.daa.optimizeRideshare.data.BayWheelsClean;
+import com.daa.optimizeRideShare.data.BayWheelsClean;
 import org.jgrapht.Graph;
 import org.jgrapht.GraphPath;
 import org.jgrapht.alg.shortestpath.YenKShortestPath;
@@ -13,19 +13,22 @@ import org.springframework.stereotype.Service;
 
 import java.util.*;
 
+/**
+ * Service class to implement All Graph operations
+ */
 @Service
 public class CreateGraph {
 
     @Autowired
     YensAlgorithm yensAlgorithm;
 
-    Graph<BayWheelsNode, DefaultWeightedEdge> bayWheelsRideMap;
-    List<GraphPath<BayWheelsNode, DefaultWeightedEdge>> kShortestpaths;
+    private Graph<BayWheelsNode, DefaultWeightedEdge> bayWheelsRideMap;
 
-    //    Graph<BayWheelsNode, DefaultWeightedEdge> kShortestPathsGraph;
-    GraphPath<BayWheelsNode, DefaultWeightedEdge> overallShortestPath;
-
-    public Graph<BayWheelsNode, DefaultWeightedEdge> createGraphFromData(List<BayWheelsClean> data) {
+    /**
+     * Service method to create a Graph representation of the cleaned BayWheels Data.
+     * @param data Graph Data fetched from Postgres DB.
+     */
+    public void createGraphFromData(List<BayWheelsClean> data) {
 
         bayWheelsRideMap = new DefaultDirectedWeightedGraph<>(DefaultWeightedEdge.class);
 
@@ -53,24 +56,36 @@ public class CreateGraph {
 
         }
 
-        return bayWheelsRideMap;
     }
 
+    /**
+     * Getter method BayWheels data Graph representation
+     * @return Graph representation
+     */
     public Graph<BayWheelsNode, DefaultWeightedEdge> getBayWheelsRideGraph() {
         return bayWheelsRideMap;
     }
 
-    public Set<GraphPath<BayWheelsNode, DefaultWeightedEdge>> getKShortestPathsBetween(BayWheelsNode source, BayWheelsNode sink, int k) {
-        return yensAlgorithm.getKShortestPaths(bayWheelsRideMap, source, sink, k);
-    }
-
+    /**
+     * Service method to get K-shortest Paths using a Yens Algorithm implementation
+     * @param source source station Node
+     * @param sink destination station Node
+     * @param k number of Shortest Paths required
+     * @return A List of jGraphT GraphPath's each representing a shortest path.
+     */
     public List<GraphPath<BayWheelsNode, DefaultWeightedEdge>> getKShortestPaths(BayWheelsNode source, BayWheelsNode sink, int k) {
-        YenKShortestPath<BayWheelsNode, DefaultWeightedEdge> yens = new YenKShortestPath<>(bayWheelsRideMap);
-        kShortestpaths = yens.getPaths(source, sink, k);
-        return kShortestpaths;
+        YenKShortestPath<BayWheelsNode, DefaultWeightedEdge> yensKShortestPaths = new YenKShortestPath<>(bayWheelsRideMap);
+        return yensKShortestPaths.getPaths(source, sink, k);
     }
 
-    public GraphPath<BayWheelsNode, DefaultWeightedEdge> getOverallShortestPath(Graph<BayWheelsNode, DefaultWeightedEdge> kShortestPathsGraph, BayWheelsNode source, BayWheelsNode sink) {
+    /**
+     * Service method to get the overall cheapest path among the k Shortest
+     * @param kShortestPathsGraph Graph representation of the k shortest paths
+     * @param source Source station Node
+     * @param sink Destination station Node
+     * @return jGraphT GraphPath representation of the shortest Path
+     */
+    public GraphPath<BayWheelsNode, DefaultWeightedEdge> getOverallCheapestPath(Graph<BayWheelsNode, DefaultWeightedEdge> kShortestPathsGraph, BayWheelsNode source, BayWheelsNode sink) {
 
         Set<BayWheelsNode> visited = new HashSet<>();
         Map<BayWheelsNode, GraphPath<BayWheelsNode, DefaultWeightedEdge>> cacheMap = new HashMap<>();
@@ -79,11 +94,18 @@ public class CreateGraph {
 
     }
 
+    /**
+     * Dynamic Programming logic to find the Cheapest path based on our custom criteria
+     * @param kShortestPathsGraph Graph representation of the k shortest paths
+     * @param source Source station Node
+     * @param sink Destination station Node
+     * @param visited Visited Set
+     * @param cacheMap Hash Map to store results of overlapping sub-problems.
+     * @return jGraphT GraphPath representation of the sub-problem results
+     */
     private GraphPath<BayWheelsNode, DefaultWeightedEdge> dp(Graph<BayWheelsNode, DefaultWeightedEdge> kShortestPathsGraph, BayWheelsNode source, BayWheelsNode sink, Set<BayWheelsNode> visited, Map<BayWheelsNode, GraphPath<BayWheelsNode, DefaultWeightedEdge>> cacheMap) {
-//        if (kShortestPathsGraph.containsEdge(source, sink)) {
-//            return createGraphPath(kShortestPathsGraph, source, sink);
-//        }
-        if(source.equals(sink)){
+
+        if (source.equals(sink)) {
             return new GraphWalk<>(kShortestPathsGraph, source, sink, new ArrayList<>(), 0);
         }
         if (cacheMap.containsKey(source)) return cacheMap.get(source);
@@ -92,14 +114,14 @@ public class CreateGraph {
         for (DefaultWeightedEdge outgoingEdge : outgoingEdges) {
             BayWheelsNode target = kShortestPathsGraph.getEdgeTarget(outgoingEdge);
             GraphPath<BayWheelsNode, DefaultWeightedEdge> path2 = null;
-            if(!visited.contains(target)){
+            if (!visited.contains(target)) {
                 visited.add(target);
                 path2 = dp(kShortestPathsGraph, target, sink, visited, cacheMap);
                 visited.remove(target);
             }
             double totalWeight;
             if (path2 != null) {
-                 totalWeight = getWeightForEdge(kShortestPathsGraph, outgoingEdge) + path2.getWeight();
+                totalWeight = getWeightForEdge(kShortestPathsGraph, outgoingEdge) + path2.getWeight();
                 if (minPath == null || minPath.getWeight() > totalWeight) {
                     GraphPath<BayWheelsNode, DefaultWeightedEdge> path1 = createGraphPath(kShortestPathsGraph, source, target);
                     GraphPath<BayWheelsNode, DefaultWeightedEdge> combinedPath = appendPaths(kShortestPathsGraph, path1, path2, totalWeight);
@@ -174,17 +196,4 @@ public class CreateGraph {
         }
         return kShortestPathsGraph;
     }
-
-//    public void display(){
-//        GraphExporter<BayWheelsNode, DefaultWeightedEdge> exporter = new DOTExporter<>();
-//
-//        try {
-//            FileWriter writer = new FileWriter("C:\\Users\\naiko\\Downloads\\graph.dot");
-//            exporter.exportGraph(bayWheelsRideMap, writer);
-//        } catch (IOException | ExportException e) {
-//            e.printStackTrace();
-//        }
-//
-//    }
-
 }
