@@ -5,14 +5,16 @@
     <link rel="stylesheet" type="text/css" href="style.css">
 </head>
 <body>
-    <div class="search-container">
-        <input type="text" id="start-station-id" placeholder="Start Station ID">
-        <input type="text" id="end-station-id" placeholder="End Station ID">
-        <button id="search-btn">Search</button>
-    </div>
-    <div id="graph-container"></div>
+<div class="search-container">
+    <input type="text" id="start-station-id" placeholder="Source Station ID">
+    <input type="text" id="end-station-id" placeholder="Destination Station ID">
+    <button id="search-btn">Search</button>
 
-    <script src="https://d3js.org/d3.v6.min.js"></script>
-    <script src="script.js"></script>
+    <button id="search-btn-overall">Get Overall Cheapest Path</button>
+</div>
+<div id="graph-container"></div>
+
+<script src="https://d3js.org/d3.v6.min.js"></script>
+<script src="script.js"></script>
 </body>
 </html>
