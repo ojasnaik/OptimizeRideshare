@@ -9,6 +9,11 @@ document.addEventListener('DOMContentLoaded', function() {
             const endStationId = document.getElementById('end-station-id').value;
             fetchGraphData('getOverallCheapestPath', startStationId, endStationId);
         });
+    document.getElementById('search-btn-dijkstra').addEventListener('click', function() {
+                const startStationId = document.getElementById('start-station-id').value;
+                const endStationId = document.getElementById('end-station-id').value;
+                fetchGraphData('getDijkstraShortestPath', startStationId, endStationId);
+            });
 });
     function fetchGraphData(apiEndpoint, startStationId, endStationId) {
         const url = `http://localhost:8080/api/${apiEndpoint}?sourceStationId=${startStationId}&destinationStationId=${endStationId}`;
