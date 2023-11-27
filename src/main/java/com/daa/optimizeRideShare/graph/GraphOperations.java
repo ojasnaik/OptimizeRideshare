@@ -19,6 +19,8 @@ import java.util.*;
 @Service
 public class GraphOperations {
 
+    public static final int RIDE_FREE_SECONDS = 100;
+
     @Autowired
     YensAlgorithm yensAlgorithm;
 
@@ -191,8 +193,8 @@ public class GraphOperations {
     private double getWeightForEdge(Graph<BayWheelsNode, DefaultWeightedEdge> kShortestPathsGraph, DefaultWeightedEdge edge) {
         double weight = 0;
         double edgeWeight = kShortestPathsGraph.getEdgeWeight(edge);
-        if (edgeWeight > 100) {
-            weight = 2 * ((edgeWeight - 100) / 60);
+        if (edgeWeight > RIDE_FREE_SECONDS) {
+            weight = 2 * ((edgeWeight - RIDE_FREE_SECONDS) / 60);
         }
         return weight;
     }

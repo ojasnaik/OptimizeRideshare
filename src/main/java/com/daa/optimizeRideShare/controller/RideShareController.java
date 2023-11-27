@@ -6,6 +6,7 @@ import com.daa.optimizeRideShare.graph.BayWheelsNode;
 import com.daa.optimizeRideShare.graph.GraphOperations;
 import org.jgrapht.Graph;
 import org.jgrapht.GraphPath;
+import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
@@ -67,12 +68,28 @@ public class RideShareController {
      * @return The most cost-efficient path among the 10 shortest paths .
      */
     @GetMapping("/getOverallCheapestPath")
-    public ResponseEntity<List<List<EdgeDTO>>> OverallShortestPath(@RequestParam(value = "sourceStationId", required = false) String sourceStationId, @RequestParam(value = "destinationStationId", required = false) String destinationStationId) {
+    public ResponseEntity<List<List<EdgeDTO>>> getOverallCheapestPath(@RequestParam(value = "sourceStationId", required = false) String sourceStationId, @RequestParam(value = "destinationStationId", required = false) String destinationStationId) {
         BayWheelsNode source = new BayWheelsNode(sourceStationId);
         BayWheelsNode destination = new BayWheelsNode(destinationStationId);
         Graph<BayWheelsNode, DefaultWeightedEdge> kShortestPathsGraph = graphOperations.createGraphFromPaths(kShortestPaths);
         GraphPath<BayWheelsNode, DefaultWeightedEdge> overallCheapestPath = graphOperations.getOverallCheapestPath(kShortestPathsGraph, source, destination);
         List<EdgeDTO> response = overallCheapestPath.getEdgeList().stream().map(defaultWeightedEdge -> convertEdgeToDTO(kShortestPathsGraph, defaultWeightedEdge)).toList();
+        return ResponseEntity.ok(Collections.singletonList(response));
+    }
+
+    /**
+     * Controller method to get the shortest path according to Dijkstra's algorithm
+     * @param sourceStationId The id of the start station.
+     * @param destinationStationId The id of the destination station.
+     * @return the Shortest path according to Dijkstra's algorithm
+     */
+    @GetMapping("/getDijkstraShortestPath")
+    public ResponseEntity<List<List<EdgeDTO>>> getDijkstraShortestPath(@RequestParam(value = "sourceStationId", required = false) String sourceStationId, @RequestParam(value = "destinationStationId", required = false) String destinationStationId) {
+        BayWheelsNode source = new BayWheelsNode(sourceStationId);
+        BayWheelsNode destination = new BayWheelsNode(destinationStationId);
+        Graph<BayWheelsNode, DefaultWeightedEdge> kShortestPathsGraph = graphOperations.createGraphFromPaths(kShortestPaths);
+        GraphPath<BayWheelsNode, DefaultWeightedEdge> shortestPath = DijkstraShortestPath.findPathBetween(kShortestPathsGraph, source, destination);
+        List<EdgeDTO> response = shortestPath.getEdgeList().stream().map(defaultWeightedEdge -> convertEdgeToDTO(kShortestPathsGraph, defaultWeightedEdge)).toList();
         return ResponseEntity.ok(Collections.singletonList(response));
     }
 
