@@ -20,6 +20,7 @@ import java.util.*;
 public class GraphOperations {
 
     public static final int RIDE_FREE_SECONDS = 100;
+    public static final int COST_PER_MINUTE = 2;
 
     @Autowired
     YensAlgorithm yensAlgorithm;
@@ -36,6 +37,7 @@ public class GraphOperations {
         bayWheelsRideMap = new DefaultDirectedWeightedGraph<>(DefaultWeightedEdge.class);
 
         for (BayWheelsClean entry : data) {
+
             if (entry.getTotal_time() < 0) continue;
 
             BayWheelsNode node1 = new BayWheelsNode();
@@ -194,7 +196,7 @@ public class GraphOperations {
         double weight = 0;
         double edgeWeight = kShortestPathsGraph.getEdgeWeight(edge);
         if (edgeWeight > RIDE_FREE_SECONDS) {
-            weight = 2 * ((edgeWeight - RIDE_FREE_SECONDS) / 60);
+            weight = COST_PER_MINUTE * ((edgeWeight - RIDE_FREE_SECONDS) / 60);
         }
         return weight;
     }
