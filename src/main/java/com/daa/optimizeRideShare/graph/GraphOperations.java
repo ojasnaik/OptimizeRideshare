@@ -25,7 +25,7 @@ public class GraphOperations {
     @Autowired
     YensAlgorithm yensAlgorithm;
 
-    private Graph<BayWheelsNode, DefaultWeightedEdge> bayWheelsRideMap;
+    private Graph<BayWheelsNode, DefaultWeightedEdge> bayWheelsRideGraph;
 
     /**
      * Service method to create a Graph representation of the cleaned BayWheels Data.
@@ -34,7 +34,7 @@ public class GraphOperations {
      */
     public void createGraphFromData(List<BayWheelsClean> data) {
 
-        bayWheelsRideMap = new DefaultDirectedWeightedGraph<>(DefaultWeightedEdge.class);
+        bayWheelsRideGraph = new DefaultDirectedWeightedGraph<>(DefaultWeightedEdge.class);
 
         for (BayWheelsClean entry : data) {
 
@@ -45,18 +45,18 @@ public class GraphOperations {
             node1.setStation_name(entry.getStart_station_name());
             node1.setStation_latitude(entry.getStart_lat());
             node1.setStation_longitude(entry.getStart_lng());
-            bayWheelsRideMap.addVertex(node1);
+            bayWheelsRideGraph.addVertex(node1);
 
             BayWheelsNode node2 = new BayWheelsNode();
             node2.setStation_id(entry.getEnd_station_id());
             node2.setStation_name(entry.getEnd_station_name());
             node2.setStation_latitude(entry.getEnd_lat());
             node2.setStation_longitude(entry.getEnd_lng());
-            bayWheelsRideMap.addVertex(node2);
+            bayWheelsRideGraph.addVertex(node2);
 
-            DefaultWeightedEdge edge = bayWheelsRideMap.addEdge(node1, node2);
+            DefaultWeightedEdge edge = bayWheelsRideGraph.addEdge(node1, node2);
             if (edge != null) {
-                bayWheelsRideMap.setEdgeWeight(edge, entry.getTotal_time());
+                bayWheelsRideGraph.setEdgeWeight(edge, entry.getTotal_time());
             }
 
         }
@@ -69,7 +69,7 @@ public class GraphOperations {
      * @return Graph representation
      */
     public Graph<BayWheelsNode, DefaultWeightedEdge> getBayWheelsRideGraph() {
-        return bayWheelsRideMap;
+        return bayWheelsRideGraph;
     }
 
     /**
@@ -81,7 +81,7 @@ public class GraphOperations {
      * @return A List of jGraphT GraphPath's each representing a shortest path.
      */
     public List<GraphPath<BayWheelsNode, DefaultWeightedEdge>> getKShortestPaths(BayWheelsNode source, BayWheelsNode sink, int k) {
-        YenKShortestPath<BayWheelsNode, DefaultWeightedEdge> yensKShortestPaths = new YenKShortestPath<>(bayWheelsRideMap);
+        YenKShortestPath<BayWheelsNode, DefaultWeightedEdge> yensKShortestPaths = new YenKShortestPath<>(bayWheelsRideGraph);
         return yensKShortestPaths.getPaths(source, sink, k);
     }
 
