@@ -2,27 +2,27 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('search-btn').addEventListener('click', function() {
         const startStationId = document.getElementById('start-station-id').value;
         const endStationId = document.getElementById('end-station-id').value;
-        fetchGraphData('get10ShortestPaths', startStationId, endStationId);
+        fetchGraphData('get10ShortestPaths', startStationId, endStationId, false);
     });
     document.getElementById('search-btn-overall').addEventListener('click', function() {
             const startStationId = document.getElementById('start-station-id').value;
             const endStationId = document.getElementById('end-station-id').value;
-            fetchGraphData('getOverallCheapestPath', startStationId, endStationId);
+            fetchGraphData('getOverallCheapestPath', startStationId, endStationId, true);
         });
     document.getElementById('search-btn-dijkstra').addEventListener('click', function() {
                 const startStationId = document.getElementById('start-station-id').value;
                 const endStationId = document.getElementById('end-station-id').value;
-                fetchGraphData('getDijkstraShortestPath', startStationId, endStationId);
+                fetchGraphData('getDijkstraShortestPath', startStationId, endStationId, true);
             });
 });
-    function fetchGraphData(apiEndpoint, startStationId, endStationId) {
+    function fetchGraphData(apiEndpoint, startStationId, endStationId, calculateWeight) {
         const url = `http://localhost:8080/api/${apiEndpoint}?sourceStationId=${startStationId}&destinationStationId=${endStationId}`;
 
         fetch(url)
             .then(response => response.json())
             .then(data => {
                 if (data && Array.isArray(data) && data.some(Array.isArray)) {
-                    renderGraph(processGraphData(data), startStationId, endStationId);
+                    renderGraph(processGraphData(data), startStationId, endStationId, calculateWeight);
                 } else {
                     // Handle unexpected data structure
                     console.error('Unexpected data structure:', data);
@@ -43,7 +43,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }));
     }
 
-    function renderGraph(graphData, startStationId, endStationId) {
+    function renderGraph(graphData, startStationId, endStationId, calculateWeight) {
         d3.select('#graph-container').selectAll('svg').remove();
 
         d3.select('#graph-container').html('');
@@ -136,5 +136,18 @@ document.addEventListener('DOMContentLoaded', function() {
                 .attr("fill", d => colorNode(d, startStationId, endStationId)) // Pass ids to colorNode
                 .attr("cx", d => d.x)
                 .attr("cy", d => d.y);
+
+        if(calculateWeight){
+            const totalAdjustedWeight = calculateTotalAdjustedWeight(graphData);
+            document.getElementById('total-adjusted-weight').textContent = totalAdjustedWeight;
+           }
     }
 
+function calculateTotalAdjustedWeight(graphData) {
+    let totalWeight = 0;
+    graphData.forEach(edge => {
+        let adjustedWeight = Math.max(0, edge.weight - 100);
+        totalWeight += adjustedWeight;
+    });
+    return ((totalWeight/60) * 2).toFixed(2);
+}
