@@ -1,2 +1,2 @@
 # OptimizeRideshare
-Optimizing Cost for Rideshare Journeys with Time-Dependent Pricing
+A SpringBoot project to optimize cost for BayWheels rideshare journeys which have time-dependent pricing.
